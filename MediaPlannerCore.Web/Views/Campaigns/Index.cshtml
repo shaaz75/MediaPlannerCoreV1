@@ -1,0 +1,232 @@
+﻿@model PaginatedList<MediaPlannerCore.Model.Models.Campaign>
+@using MediaPlannerCore.Model.Helper.CustomModel
+
+@{
+    ViewData["Title"] = "Index";
+    ViewData["Message"] = "No Record Found";
+    var prevDisabled = !Model.HasPreviousPage ? "disabled" : "";
+    var nextDisabled = !Model.HasNextPage ? "disabled" : "";
+}
+
+
+
+<div class="row">
+    <div class="col-md-6">
+        @*<a asp-action="Create" asp-controller="Campaign">Create New</a>*@
+        <p>
+            <input type="button" value="Create New" class="btn btn-warning" style="color:white" onclick="location.href='@Url.Action("Create", "Campaigns")'" />
+        </p>
+    </div>
+</div>
+
+
+<div class="row">
+    <div class="col-md-12">
+        <form asp-action="Index">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        @Html.TextBox("filter", null, new { @class = "form-control searchTextbox", @placeholder = "Search Campaign" })
+                        <input type="submit" value="Search" class="btn btn-primary" />
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <a href="@Url.Action("ExportToExcel")" style="float:right">
+                        <img src="@Url.Content("~/img/excel.png")" style="width:30px; height:30px" title="Export to Excel" />
+                    </a>
+                </div>
+            </div>
+        </form>
+    </div>
+
+
+</div>
+
+<script>
+    $(function () {
+        $("#tabs").tabs();
+    });
+</script>
+<div id="tabs" style="clear:both">
+    <ul>
+        <li>
+            <a href="#tabs-1">List View</a>
+        </li>
+        <li>
+            <a href="#tabs-2">Chart View</a>
+        </li>
+    </ul>
+    
+    <div id="tabs-1">
+        @if (Model.Count() > 0)
+        {
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>
+                            @Html.DisplayNameFor(model => model.First().CampaignName)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.First().StartDateTime)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.First().EndDateTime)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.First().Budget)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.First().Client)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.First().Country)
+                        </th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.CampaignName)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.StartDateTime)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.EndDateTime)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Budget)
+                            </td>
+                            <td>
+                                @if (item.Client != null)
+                                {
+                                    @Html.DisplayFor(modelItem => item.Client.ClientName)
+                                }
+                                else
+                                {
+                                    @Html.DisplayFor(modelItem => "")
+                                }
+
+                            </td>
+                            <td>
+                                @if (item.Country != null)
+                                {
+                                    @Html.DisplayFor(modelItem => item.Country.CountryName)
+                                }
+                                else
+                                {
+                                    @Html.DisplayFor(modelItem => "")
+                                }
+                            </td>
+                            <td>
+                                @*<a asp-action="Edit" asp-route-id="@item.CampaignId">Edit</a> |
+        <a asp-action="Details" asp-route-id="@item.CampaignId">Details</a> |
+        <a asp-action="Delete" asp-route-id="@item.CampaignId">Delete</a> |*@
+                                <a asp-action="Edit" asp-route-id="@item.CampaignId"><img src="~/img/edit.jpg" title="Edit" style="width:20px;height:20px" /></a> |
+                                <a asp-action="Details" asp-route-id="@item.CampaignId"><img src="~/img/details.png" title="Details" style="width:15px;height:15px" /></a> |
+                                <a asp-action="Delete" asp-route-id="@item.CampaignId"><img src="~/img/delete.png" title="Delete" style="width:15px;height:15px" /></a> |
+                                <a asp-action="Index" asp-controller="AdSets" asp-route-id="@item.CampaignId">AdSet</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+
+
+            <a asp-action="Index"
+               asp-route-sortOrder="@ViewData["CurrentSort"]"
+               asp-route-page="@(Model.PageIndex - 1)"
+               asp-route-currentFilter="@ViewData["CurrentFilter"]"
+               class="btn btn-default @prevDisabled">
+                Previous
+            </a>
+            <a asp-action="Index"
+               asp-route-sortOrder="@ViewData["CurrentSort"]"
+               asp-route-page="@(Model.PageIndex + 1)"
+               asp-route-currentFilter="@ViewData["CurrentFilter"]"
+               class="btn btn-default @nextDisabled">
+                Next
+            </a>
+
+        }
+        else
+        {
+            <partial name="_CustomMessage" ,@ViewData["Message"] />
+        }
+    </div>
+    <div id="tabs-2" style="clear:both">
+        <div class="row">
+            <div class="col-6">
+                <div id="chartContainer" style="height: 300px; width: 300px;"></div>
+            </div>
+            <div class="col-6">
+                <div id="chartContainer1" style="height: 300px; width: 300px;"></div>
+            </div>
+        </div>
+
+    </div>
+    </div>
+    <style type="text/css">
+        .searchTextbox {
+            display: inline-block;
+            width: 70%;
+        }
+    </style>
+    <script src="~/lib/jquery/dist/jquerylatest.js"></script>
+    <script>
+    function pieChart() {
+        var result = @Html.Raw(@ViewBag.PieData);
+        var dataPoints = [];
+        for (var i = 0; i < result.length; i++) {
+            dataPoints.push({ x: result[i].X, y: result[i].Y, label: result[i].Label });
+        }
+        var chart = new CanvasJS.Chart("chartContainer", {
+            animationEnabled: true,
+            title: {
+                text: "Campaign & Budget Chart"
+            },
+            data: [
+                {
+                    type: "pie",
+                    indexLabel: "Camaign Name : {label} , Budget : {y}",
+                    dataPoints: dataPoints
+                }
+            ]
+        });
+        chart.render();
+    }
+    function barChart() {
+        var result = @Html.Raw(@ViewBag.PieData);
+        var dataPoints = [];
+        for (var i = 0; i < result.length; i++) {
+            dataPoints.push({ label: result[i].Label, y: result[i].Y });
+        }
+        console.log(dataPoints);
+        var chart = new CanvasJS.Chart("chartContainer1",
+            {
+                title: {
+                    text: "Campaign & Ads Chart"
+                },
+                axisY: {
+                    title: "Budget"
+                },
+                data: [
+                    {
+                        type: "column",
+                        legendText: "Campaigns",
+                        dataPoints: dataPoints
+                    }
+                ]
+            });
+        chart.render();
+    }
+
+
+        $(document).ready(function () {
+            pieChart();
+            barChart();
+        });
+    </script>

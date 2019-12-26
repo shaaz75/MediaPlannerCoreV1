@@ -1,0 +1,43 @@
+﻿@model MediaPlannerCore.Model.Models.AdSet
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="AdSetId" />
+            <div class="form-group">
+                @*<label asp-for="CampaignId" class="control-label"></label>
+        <select asp-for="CampaignId" class="form-control" asp-items="ViewBag.CampaignId"></select>
+        <span asp-validation-for="CampaignId" class="text-danger"></span>*@
+                <input type="hidden" name="CampaignId" value="@ViewBag.CampaignId" />
+            </div>
+            <div class="form-group">
+                <label asp-for="MediaChannelId" class="control-label"></label>
+                <select asp-for="MediaChannelId" class="form-control" asp-items="ViewBag.MediaChannelId">
+                    <option>Select Media Channel</option>
+                </select>
+                <span asp-validation-for="MediaChannelId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="SupplierId" class="control-label"></label>
+                <select asp-for="SupplierId" class="form-control" asp-items="ViewBag.SupplierId">
+                    <option>Select Supplier</option>
+                </select>
+                <span asp-validation-for="SupplierId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index" asp-route-id="@ViewBag.CampaignId">Back to List</a>
+</div>
+

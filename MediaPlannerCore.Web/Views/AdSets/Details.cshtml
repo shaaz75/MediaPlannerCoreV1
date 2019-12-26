@@ -1,0 +1,43 @@
+﻿@model MediaPlannerCore.Model.Models.AdSet
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<div>
+
+    <dl class="row">
+        
+        <dt class = "col-sm-2">
+            @Html.DisplayName("Media Channel")
+        </dt>
+        <dd class="col-sm-10">
+            @if (Model.MediaChannel != null)
+            {
+                @Html.DisplayFor(model => model.MediaChannel.MediaChannelName)
+            }
+            else
+            {
+                @Html.DisplayFor(model => "")
+            }
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Supplier)
+        </dt>
+        <dd class="col-sm-10">
+            @if (Model.Supplier != null)
+            {
+                @Html.DisplayFor(model => model.Supplier.SupplierName)
+            }
+
+            else
+            {
+                @Html.DisplayFor(model => "")
+            }
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-action="Edit" asp-route-id="@Model.AdSetId">Edit</a> |
+    <a asp-action="Index" asp-route-id="@ViewBag.CampaignId">Back to List</a>
+</div>
